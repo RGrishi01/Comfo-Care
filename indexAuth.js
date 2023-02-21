@@ -20,6 +20,12 @@ let data = {
     'passwords': passwords = []
 }
 
+let authToken = '';
+
+app.delete("/logout", (req, res) => {
+    authToken == '';
+    res.redirect('/login');
+})
 
 app.post("/login", async (req, res) => {
     const {username, password} = req.body;
@@ -38,7 +44,7 @@ app.post("/login", async (req, res) => {
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
-    const authToken = authHeader && authHeader.split(' ')[1];
+    authToken = authHeader && authHeader.split(' ')[1];
     if(!authToken) {
         return res.sendStatus(401);
     }
