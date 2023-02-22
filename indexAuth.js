@@ -5,7 +5,7 @@ const app = express();
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
-// const mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
 app.use(cors());
 app.use(express.json());
@@ -16,8 +16,8 @@ app.listen(4000, () => {
 });
 
 let data = {
-    'usernames': usernames = [],
-    'passwords': passwords = []
+    usernames: usernames = [],
+    passwords: passwords = []
 }
 
 let authToken = '';
@@ -53,7 +53,7 @@ function authenticateToken(req, res, next) {
         if(err) {
             return res.sendStatus(403);
         }
-        req.user = user;
+        req.user = data;
         next();
     })
 }
