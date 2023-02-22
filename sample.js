@@ -4,8 +4,8 @@ btn.onclick = function() {
     const inputPassword = document.getElementById('Password');
     let {username, password} = 
     { 
-        "username": inputUsername.value,
-        "password": inputPassword.value
+        username: inputUsername.value,
+        password: inputPassword.value
     }
     console.log(inputUsername.value);
     console.log(inputPassword.value);

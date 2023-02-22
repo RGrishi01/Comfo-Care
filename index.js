@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
 
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: false}));
+app.use(express.urlencoded({ extended: false }));
 
 app.listen(5000, () => {
     console.log("server running at PORT 5000");
@@ -21,8 +21,8 @@ app.get("/hello", authenticateToken, (req, res) => {
 });
 
 let data = {
-    'usernames': usernames = [],
-    'passwords': passwords = []
+    usernames: [],
+    passwords: []
 }
 
 function authenticateToken(req, res, next) {
@@ -32,11 +32,11 @@ function authenticateToken(req, res, next) {
         return res.sendStatus(401);
     }
 
-    jwt.verify(authToken, process.env.ACCESS_TOKEN_SECRET, function(err, data) {
+    jwt.verify(authToken, process.env.ACCESS_TOKEN_SECRET, (err, data) => {
         if(err) {
             return res.sendStatus(403);
         }
-        req.user = user;
+        req.user = data;
         next();
     })
 }
