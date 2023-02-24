@@ -15,6 +15,7 @@ app.listen(4000, () => {
     console.log("server running at PORT 4000");
 });
 
+//Connecting mongoose
 const connection = async () => {
     try {
         await mongoose.connect('mongodb+srv://shivansh-12:shivansh@cluster0.vvpfe.mongodb.net/comfo-care?retryWrites=true&w=majority',
@@ -30,32 +31,35 @@ const connection = async () => {
 };
 connection();
 
+//Creating schema for login
 const schema = new mongoose.Schema({ username: 'string', password: 'string', role: 'string'});
 const login = mongoose.model('login', schema);
 
+// Login route
 app.post("/login", async (req, res) => {
-
     console.log(req.body);
     const {username, password} = req.body;
 
-    try {    
-        const user = await login.findOne({ username });
-
-        if(user && user.password === password) {
-
+    try {  
+        const user = login.findOne({ username });  
+        if(user && user.password === password && user.role === "student") {
             res.json({
                 error: false,
-                token: getSingedToken({ username })
+                token: getSingedToken({ username }),
+                role: "student"
             })
-        }
-        else {
-
+        } else if(user && user.password === password && user.role === "hospital") {
+            res.json({
+                error: false,
+                token: getSingedToken({ username }),
+                role: "hospital"
+            })
+        } else {
             res.json({
                 error: true,
                 message: "Incorrect credentials"
             })
         }
-
     } catch(err) {
         res.json({
             error: true,
@@ -63,6 +67,60 @@ app.post("/login", async (req, res) => {
         })
     }
 });
+
+
+app.post("/report", authenticateToken, async (req, res) => {
+    // const {report} = req.body;
+    console.log(req.user)
+    res.json({
+        error: false,
+        message: "Report saved"
+    })
+});
+
+function getSingedToken(payload) {
+    let options = {
+        expiresIn: "365d",
+    };
+    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, options)
+}
+
+//Function for authenticating token
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    authToken = authHeader && authHeader.split(' ')[1];
+    if(!authToken) {
+        return res.json({
+            error: true,
+            message: "Token does not exist"
+        });
+    }
+
+    jwt.verify(authToken, process.env.ACCESS_TOKEN_SECRET, (err, data) => {
+        if(err) {
+            return res.json({
+                error: true,
+                message: "Wrong token received"
+            });
+        }
+        req.user = data;
+        next();
+    })
+}
+
+// const schema2 = new mongoose.Schema({ username: {type: 'string', ref: login}, report: 'string'});
+// const reports = mongoose.model('reports', schema2);
+
+// app.get("/hospital", authenticateToken, async (req, res) => {
+//     const user2 = await reports.findOne({ username });
+
+//     if(user2.username === user.password){}
+
+// });
+
+
+
+
 
 // app.post("/register", async (req, res) => {
 
@@ -99,41 +157,3 @@ app.post("/login", async (req, res) => {
 //         })
 //     }
 // });
-
-app.post("/report", authenticateToken, async (req, res) => {
-    const {report} = req.body;
-    console.log(req.user)
-    res.json({
-        error: false,
-        message: "Report saved"
-    })
-});
-
-function getSingedToken(payload) {
-    let options = {
-        expiresIn: "365d",
-    };
-    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, options)
-}
-
-function authenticateToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    authToken = authHeader && authHeader.split(' ')[1];
-    if(!authToken) {
-        return res.json({
-            error: true,
-            message: "Token does not exist"
-        });
-    }
-
-    jwt.verify(authToken, process.env.ACCESS_TOKEN_SECRET, (err, data) => {
-        if(err) {
-            return res.json({
-                error: true,
-                message: "Wrong token received"
-            });
-        }
-        req.user = data;
-        next();
-    })
-}

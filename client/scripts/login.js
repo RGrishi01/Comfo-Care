@@ -15,14 +15,19 @@ btn.onclick = function() {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-    })
-    async function set(response) {
-        let res = await response.json();
-        if(res.error == true && res.message) {
+    }).then((response) => response.json())
+    .then((res) => {
+        console.log(res);
+        if(res.error == true) {
             alert("Invalid credentials. Please try again.");
         }
-        if(res.error == false && res.message) {
-            window.location.href = "http://127.0.0.1:5500/reports.html";
+        if(res.error == false && res.role === "student") {
+            window.localStorage.setItem("token", res.token);
+            window.location.href = "http://127.0.0.1:5500/client/student_main.html";
         }
-    }
+        if(res.error == false && res.role === "hospital") {
+            window.localStorage.setItem("token", res.token);
+            window.location.href = "http://127.0.0.1:5500/client/hospital_main.html";
+        }    
+    })
 }
