@@ -4,8 +4,10 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 // const bcrypt = require("bcrypt");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
+var Buffer = require("buffer/").Buffer;
+const multer = require("multer");
 
 app.use(cors());
 app.use(express.json());
@@ -26,29 +28,35 @@ const connection = async () => {
         console.log('Connected to the Database!!')
 
     } catch (err) {
-        console.log('Database Connection failed: '+ err.message)
+        console.log('Database Connection failed: ' + err.message)
     }
 };
 connection();
+let payload_username;
 
 //Creating schema for login
-const schema = new mongoose.Schema({ username: 'string', password: 'string', role: 'string'});
+const schema = new mongoose.Schema({ username: 'string', password: 'string', role: 'string' });
 const login = mongoose.model('login', schema);
 
 // Login route
 app.post("/login", async (req, res) => {
     console.log(req.body);
-    const {username, password} = req.body;
+    const { username, password } = req.body;
 
-    try {  
-        const user = login.findOne({ username });  
-        if(user && user.password === password && user.role === "student") {
+    // parsing token to extract username
+    let token = getSingedToken({ username });
+    payload_username = parseJwt(token).username;
+    console.log("payload: ", payload_username);
+
+    try {
+        const user = await login.findOne({ username });
+        if (user && user.password === password && user.role === "student") {
             res.json({
                 error: false,
                 token: getSingedToken({ username }),
                 role: "student"
             })
-        } else if(user && user.password === password && user.role === "hospital") {
+        } else if (user && user.password === password && user.role === "hospital") {
             res.json({
                 error: false,
                 token: getSingedToken({ username }),
@@ -60,7 +68,7 @@ app.post("/login", async (req, res) => {
                 message: "Incorrect credentials"
             })
         }
-    } catch(err) {
+    } catch (err) {
         res.json({
             error: true,
             message: err.message
@@ -68,28 +76,26 @@ app.post("/login", async (req, res) => {
     }
 });
 
-
-app.post("/report", authenticateToken, async (req, res) => {
-    // const {report} = req.body;
-    console.log(req.user)
-    res.json({
-        error: false,
-        message: "Report saved"
-    })
-});
-
+//storing return value of token
 function getSingedToken(payload) {
     let options = {
         expiresIn: "365d",
     };
-    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, options)
+    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, options);
+}
+
+//Function for parsing token
+function parseJwt(token) {
+    var base64Payload = token.split('.')[1];
+    var payload = Buffer.from(base64Payload, 'base64');
+    return JSON.parse(payload.toString());
 }
 
 //Function for authenticating token
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     authToken = authHeader && authHeader.split(' ')[1];
-    if(!authToken) {
+    if (!authToken) {
         return res.json({
             error: true,
             message: "Token does not exist"
@@ -97,7 +103,7 @@ function authenticateToken(req, res, next) {
     }
 
     jwt.verify(authToken, process.env.ACCESS_TOKEN_SECRET, (err, data) => {
-        if(err) {
+        if (err) {
             return res.json({
                 error: true,
                 message: "Wrong token received"
@@ -108,16 +114,33 @@ function authenticateToken(req, res, next) {
     })
 }
 
-// const schema2 = new mongoose.Schema({ username: {type: 'string', ref: login}, report: 'string'});
-// const reports = mongoose.model('reports', schema2);
+//Using multer to save and display reports
+const upload = multer({ dest: "reports/" });
+app.get("/hospital", authenticateToken, upload.single, async (req, res) => {
 
-// app.get("/hospital", authenticateToken, async (req, res) => {
-//     const user2 = await reports.findOne({ username });
+});
 
-//     if(user2.username === user.password){}
 
+
+
+
+
+
+
+
+
+
+
+
+
+// app.post("/report", authenticateToken, async (req, res) => {
+//     // const {report} = req.body;
+//     console.log(req.user);
+//     res.json({
+//         error: false,
+//         message: "Report saved"
+//     })
 // });
-
 
 
 

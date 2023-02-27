@@ -10,7 +10,7 @@ btn2.onclick = function() {
 
 
 const btn3 = document.querySelector('#logout');
-btn3.onClick = function() {
-    window.localStorage.removeItem("token");
+btn3.onclick = function() {
+    window.localStorage.clear();
     window.location.href = "http://127.0.0.1:5500/client/login.html";
 }

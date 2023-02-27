@@ -1,3 +1,7 @@
+window.onload = function (e) {
+    window.localStorage.clear();
+}
+
 const btn = document.querySelector('#login');
 btn.onclick = function() {
     const inputUsername = document.getElementById('Username');
