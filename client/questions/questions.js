@@ -2,7 +2,7 @@ let ques_no = [];
 let ques_val = [];
 
 let path = window.location.pathname;
-let page = path.slice(19,21);
+let page = path.slice(19,20);
 ques_no.push( page );
 
 console.log( path );
@@ -16,12 +16,13 @@ let btn = document.querySelectorAll("#btn");
 console.log(btn);
 for(let i = 0; i < 3; i++) {
     btn[i].onclick = function() {
-        if(next_page == 10) {
+        if(next_page == 9) {
             window.location.href = "http://127.0.0.1:5500/client/gen-report.html";
         }
         else {
             window.location.href = "http://127.0.0.1:5500/client/questions/q" + next_page +  ".html";
         }
+        window.localStorage.setItem( page, i );
     }
 }
 

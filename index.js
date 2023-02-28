@@ -117,7 +117,7 @@ function authenticateToken(req, res, next) {
 //Using multer to save and display reports
 const upload = multer({ dest: "reports/" });
 app.get("/hospital", authenticateToken, upload.single, async (req, res) => {
-
+    
 });
 
 
