@@ -11,31 +11,24 @@
 </head>
 
 <body>
-    <h4 id="question">Do you have a fever? How intense is it?</h4>
-    
-        <input class="form-check-input mx-1 my-2" type="radio" name="exampleRadios" id="id" value="option1"
-            unchecked>
-        <label class="form-check-label mx-4" for="exampleRadios1">
-            None
-        </label>
-        <br>
-
-        <input class="form-check-input mx-1 my-2" type="radio" name="exampleRadios" id="id" value="option1" 
-            unchecked>
-        <label class="form-check-label mx-4" for="exampleRadios1">
-            Moderate
-        </label>
-        <br>
-    
-        <input class="form-check-input mx-1 my-2" type="radio" name="exampleRadios" id="id" value="option1" 
-            unchecked>
-        <label class="form-check-label mx-4" for="exampleRadios1">
-            Severe
-        </label>
+    <div class="card" style="width: 30rem;">
+        <h4 id="question">Do you have a fever? How intense is it?</h4>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <button id="btn" class="btn btn-secondary btn">None</button>
+            </li>
+            <li class="list-group-item">
+                <button id="btn" class="btn btn-secondary btn">Moderate</button>
+            </li>
+            <li class="list-group-item">
+                <button id="btn" class="btn btn-secondary btn">Severe</button>
+            </li>
+        </ul>
+    </div>
+    <button id="cancel_quiz" type="button" class="btn btn-secondary btn-sm">Cancel Quiz</button>
 
 
     <script src="./questions.js"></script>
 </body>
-
 
 </html>

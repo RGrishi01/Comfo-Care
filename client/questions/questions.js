@@ -2,33 +2,30 @@ let ques_no = [];
 let ques_val = [];
 
 let path = window.location.pathname;
-let page = path.slice(19,20);
+let page = path.slice(19,21);
 ques_no.push( page );
 
 console.log( path );
 console.log( page );
 console.log( ques_no );
 
-let btn = document.querySelectorAll("#id");
-btn.onclick = function() {
-    check[2].checked = true;
-}
-
 let next_page = parseInt(page) + 1;
-// document.getElementsByName("exampleRadios").addEventListener("change", myFunction);
 
-let check = document.getElementsByName("exampleRadios");
-check[1].checked = true;
-if(check[0].checked == true) {
-    console.log(check);
-    myFunction();
+
+let btn = document.querySelectorAll("#btn");
+console.log(btn);
+for(let i = 0; i < 3; i++) {
+    btn[i].onclick = function() {
+        if(next_page == 10) {
+            window.location.href = "http://127.0.0.1:5500/client/gen-report.html";
+        }
+        else {
+            window.location.href = "http://127.0.0.1:5500/client/questions/q" + next_page +  ".html";
+        }
+    }
 }
 
-function myFunction() {
-    ques_val.push();
-    console.log("onchange");
-    window.location.href = "http://127.0.0.1:5500/client/questions/q" + next_page +  ".html";
+const btn1 = document.querySelector('#cancel_quiz');
+btn1.onclick = function() {
+    window.location.href = "http://127.0.0.1:5500/client/student_main.html";
 }
-
-console.log( ques_val );
-console.log("http://127.0.0.1:5500/client/questions/q" + next_page +  ".html"); 
