@@ -116,8 +116,9 @@ function authenticateToken(req, res, next) {
 
 //Using multer to save and display reports
 const upload = multer({ dest: "reports/" });
-app.get("/hospital", authenticateToken, upload.single, async (req, res) => {
-    
+app.post("/gen-report", authenticateToken, upload.single("file"), async (req, res) => {
+    console.log("inside post backend");
+    res.json({ status: "success" });
 });
 
 

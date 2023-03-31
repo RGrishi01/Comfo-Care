@@ -11,12 +11,14 @@ console.log( ques_no );
 
 let next_page = parseInt(page) + 1;
 
+let a = 0;
+window.localStorage.setItem("a", 0);
 
 let btn = document.querySelectorAll("#btn");
 console.log(btn);
 for(let i = 0; i < 3; i++) {
     btn[i].onclick = function() {
-        if(next_page == 9) {
+        if(next_page == 8) {
             window.location.href = "http://127.0.0.1:5500/client/gen-report.html";
         }
         else {
