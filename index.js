@@ -18,9 +18,9 @@ app.listen(4000, () => {
 });
 
 //Connecting mongoose
-const connection = async () => {
+const connection = () => {
     try {
-        await mongoose.connect('mongodb+srv://shivansh-12:shivansh@cluster0.vvpfe.mongodb.net/comfo-care?retryWrites=true&w=majority',
+        mongoose.connect(process.env.DB_CONNECTION_URL,
             {
                 useNewUrlParser: true,
                 useUnifiedTopology: true,
