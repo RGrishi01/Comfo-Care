@@ -38,6 +38,21 @@ let payload_username;
 const schema = new mongoose.Schema({ username: 'string', password: 'string', role: 'string' });
 const login = mongoose.model('login', schema);
 
+//storing return value of token
+function getSingedToken(payload) {
+    let options = {
+        expiresIn: "365d",
+    };
+    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, options);
+}
+
+//Function for parsing token
+function parseJwt(token) {
+    var base64Payload = token.split('.')[1];
+    var payload = Buffer.from(base64Payload, 'base64');
+    return JSON.parse(payload.toString());
+}
+
 // Login route
 app.post("/login", async (req, res) => {
     console.log(req.body);
@@ -76,25 +91,10 @@ app.post("/login", async (req, res) => {
     }
 });
 
-//storing return value of token
-function getSingedToken(payload) {
-    let options = {
-        expiresIn: "365d",
-    };
-    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, options);
-}
-
-//Function for parsing token
-function parseJwt(token) {
-    var base64Payload = token.split('.')[1];
-    var payload = Buffer.from(base64Payload, 'base64');
-    return JSON.parse(payload.toString());
-}
-
 //Function for authenticating token
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
-    authToken = authHeader && authHeader.split(' ')[1];
+    const authToken = authHeader && authHeader.split(' ')[1];
     if (!authToken) {
         return res.json({
             error: true,
@@ -120,13 +120,6 @@ app.post("/gen-report", authenticateToken, upload.single("file"), async (req, re
     console.log("inside post backend");
     res.json({ status: "success" });
 });
-
-
-
-
-
-
-
 
 
 
