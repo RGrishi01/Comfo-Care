@@ -13,8 +13,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.listen(4000, () => {
-  console.log("server running at PORT 4000");
+app.listen(port, (error) => {
+  if (error) {
+    console.log("Error: " + Error);
+  } else {
+    console.log(`Server is running at port ${port}`);
+  }
 });
 
 //Connecting mongoose
@@ -30,15 +34,6 @@ function connection() {
   }
 }
 connection();
-let payload_username;
-
-//Creating schema for login
-const schema = new mongoose.Schema({
-  username: "string",
-  password: "string",
-  role: "string",
-});
-const login = mongoose.model("login", schema);
 
 //storing return value of token
 function getSingedToken(payload) {
@@ -48,12 +43,15 @@ function getSingedToken(payload) {
   return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, options);
 }
 
-//Function for parsing token
-function parseJwt(token) {
-  var base64Payload = token.split(".")[1];
-  var payload = Buffer.from(base64Payload, "base64");
-  return JSON.parse(payload.toString());
-}
+let payload_username;
+
+//Creating schema for login
+const schema = new mongoose.Schema({
+  username: "string",
+  password: "string",
+  role: "string",
+});
+const login = mongoose.model("login", schema);
 
 // Login route
 app.post("/login", async (req, res) => {
@@ -116,59 +114,35 @@ function authenticateToken(req, res, next) {
   });
 }
 
-//Using multer to save and display reports
-// const upload = multer({ dest: "reports/" });
-// app.post(
-//   "/gen-report",
-//   authenticateToken,
-//   upload.single("file"),
-//   async (req, res) => {
-//     console.log("inside post backend");
-//     res.json({ status: "success" });
-//   }
-// );
+app.post("/register", async (req, res) => {
+  // take input from user
+  // jo bhi client ne username aur password bheja
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.json({
+      error: true,
+      message: "username/ password nahi bheja",
+    });
+  }
+  try {
+    const doesExist = await login.findOne({ username });
+    if (doesExist) {
+      return res.json({
+        error: true,
+        message: "aur kisi ka account already hai iss username se",
+      });
+    }
 
-// app.post("/report", authenticateToken, async (req, res) => {
-//     // const {report} = req.body;
-//     console.log(req.user);
-//     res.json({
-//         error: false,
-//         message: "Report saved"
-//     })
-// });
-
-// app.post("/register", async (req, res) => {
-
-//     // take input from user
-//     // jo bhi client ne username aur password bheja
-//     const {username, password} = req.body;
-//     if(!username || !password) {
-//         return res.json({
-//             error: true,
-//             message: "username/ password nahi bheja"
-//         })
-//     }
-
-//     try {
-
-//         const doesExist = await login.findOne({ username });
-//         if(doesExist) {
-//             return res.json({
-//                 error: true,
-//                 message: "aur kisi ka account already hai iss username se",
-//             })
-//         }
-
-//         const newUser = new login({ username, password, role: "hospital" });
-//         await newUser.save();
-//         return res.json({
-//             error: false,
-//             message: "register kar liya"
-//         })
-//     } catch(err) {
-//         return res.json({
-//             error: true,
-//             message: err.message
-//         })
-//     }
-// });
+    const newUser = new login({ username, password, role });
+    await newUser.save();
+    return res.json({
+      error: false,
+      message: "register kar liya",
+    });
+  } catch (err) {
+    return res.json({
+      error: true,
+      message: err.message,
+    });
+  }
+});
